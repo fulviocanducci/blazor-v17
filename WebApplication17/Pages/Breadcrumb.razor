@@ -1,0 +1,26 @@
+﻿<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        @if (ShowGoBack)
+        {
+        <li class="breadcrumb-item active" aria-current="page">
+            <button class="btn btn-link disabled">Pesquisa do CEP</button>
+        </li>
+        }
+        else
+        {
+            <li class="breadcrumb-item">
+                <button class="btn btn-link" onclick="@ActionCancel">Pesquisa do CEP</button>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <button class="btn btn-link disabled">Resultado</button>
+            </li>
+        }
+    </ol>
+</nav>
+@functions {
+    [Parameter]
+    bool ShowGoBack { get; set; } = false;
+
+    [Parameter]
+    Action ActionCancel { get; set; }
+}

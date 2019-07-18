@@ -1,0 +1,65 @@
+﻿@if (Model != null)
+{
+    <div class="alert alert-success mt-3" role="alert">
+        <h4 class="alert-heading">Sucesso !!!</h4>
+        <p></p>
+        <hr>
+        <p class="mb-0" style="display:@(string.IsNullOrEmpty(Model?.Zip)?"none":"block")">
+            <small id="staticZipNumberFormat" class="form-text text-muted">Número</small>
+            @Model?.Zip
+        </p>
+        <p class="mb-0" style="display:@(string.IsNullOrEmpty(Model?.Address)?"none":"block")">
+            <small id="staticZipNumberFormat" class="form-text text-muted">Endereço</small>
+            @Model?.Address
+        </p>
+        <p class="mb-0" style="display:@(string.IsNullOrEmpty(Model?.Complement)?"none":"block")">
+            <small id="staticZipNumberFormat" class="form-text text-muted">Complemento</small>
+            @Model?.Complement
+        </p>
+        <p class="mb-0" style="display:@(string.IsNullOrEmpty(Model?.City)?"none":"block")">
+            <small id="staticZipNumberFormat" class="form-text text-muted">Cidade e Estado</small>
+            @Model?.City / @Model?.UF
+        </p>
+        <p class="mb-0" style="display:@(string.IsNullOrEmpty(Model?.District)?"none":"block")">
+            <small id="staticZipNumberFormat" class="form-text text-muted">Bairro</small>
+            @Model?.District
+        </p>
+        <p class="mb-0" style="display:@(string.IsNullOrEmpty(Model?.Unity)?"none":"block")">
+            <small id="staticZipNumberFormat" class="form-text text-muted">Unidade</small>
+            @Model?.Unity
+        </p>
+        <p class="mb-0" style="display:@(string.IsNullOrEmpty(Model?.IBGE)?"none":"block")">
+            <small id="staticZipNumberFormat" class="form-text text-muted">IBGE</small>
+            @Model?.IBGE
+        </p>
+        <p class="mb-0" style="display:@(string.IsNullOrEmpty(Model.Gia)?"none":"block")">
+            <small id="staticZipNumberFormat" class="form-text text-muted">Gia</small>
+            @Model?.Gia
+        </p>
+    </div>
+}
+
+@if (Error)
+{
+    <div class="alert alert-danger mt-3" role="alert">
+        <h4 class="alert-heading">Error !!!</h4>        
+        <hr>
+        <p>Não foi encontrado ...</p>
+    </div>
+}
+
+@if (Error || Model != null)
+{
+    <button onclick="@ActionCancel" class="btn btn-block btn-danger">Cancelar</button>
+}
+
+@functions {
+    [Parameter]
+    ZipCode Model { get; set; }
+
+    [Parameter]
+    bool Error { get; set; } = false;
+
+    [Parameter]
+    Action ActionCancel { get; set; }
+}

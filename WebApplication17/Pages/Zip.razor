@@ -1,0 +1,82 @@
+﻿@page "/zip-code"
+@inject HttpClient Http
+@inject IJSRuntime jsRuntime
+<h1>Pesquisa de CEP do Brasil</h1>
+<Breadcrumb ShowGoBack="@(FormInvisible())" 
+            ActionCancel="@(async () => await ButtonCancel())"
+            >
+</Breadcrumb>
+@if (FormInvisible())
+{
+    <EditForm Model="@ZipnumberModel" OnValidSubmit="@ButtonValidationSubmit">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="form-group">
+            <label for="staticZipNumber" class="">Numero:</label>
+            <InputText Id="staticZipNumber" @bind-Value="ZipnumberModel.Number" Class="form-control" AdditionalAttributes="@AttributesInput"></InputText>
+            <small id="staticZipNumberFormat" class="form-text text-muted">Formato: 00000-000</small>
+            <p style="height:15px">
+                <ValidationMessage For="@(() => ZipnumberModel.Number)"></ValidationMessage>
+            </p>
+        </div>
+        <button class="btn btn-primary btn-block">Procurar</button>
+    </EditForm>
+}
+<WebApplication17.Pages.ZipCodeViewModel Model="@ZipCodeModel"
+                                         ActionCancel="@(async () => await ButtonCancel())"
+                                         Error="@ModelError">
+</WebApplication17.Pages.ZipCodeViewModel>
+
+@functions {
+    const string Address = "http://viacep.com.br/ws/{0}/json/";
+    Zipnumber ZipnumberModel = new Zipnumber();
+    ZipCode ZipCodeModel = null;
+    bool ModelError = false;    
+    IReadOnlyDictionary<string, object> AttributesInput = new Dictionary<string, object>
+    {
+        ["maxlength"] = 9
+    };
+
+    protected override void OnAfterRender()
+    {
+        base.OnAfterRender();
+        jsRuntime.InvokeAsync<bool>("setInputFocus", "staticZipNumber");
+        jsRuntime.InvokeAsync<bool>("setMaskInput", "staticZipNumber");
+    }
+
+    private bool FormInvisible()
+    {
+        if (ModelError)
+        {
+            return false;
+        }
+        if (!string.IsNullOrEmpty(ZipCodeModel?.Zip))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private async Task ButtonValidationSubmit()
+    {
+        ZipCodeModel = null;
+        ModelError = false;
+        string jsonTextResult = await Http.GetStringAsync(string.Format(Address, ZipnumberModel?.Number));
+        if (jsonTextResult.IndexOf("erro") > -1)
+        {
+            ModelError = true;
+        }
+        else
+        {
+            ZipCodeModel = System.Text.Json.Serialization.JsonSerializer.Parse<ZipCode>(jsonTextResult);
+        }
+    }
+
+    private async Task ButtonCancel()
+    {
+        ModelError = false;
+        ZipCodeModel = null;
+        ZipnumberModel.Number = string.Empty;
+        await jsRuntime.InvokeAsync<bool>("setInputFocus", "staticZipNumber");
+    }
+}
